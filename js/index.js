@@ -177,3 +177,59 @@ discardAllBtn.addEventListener('click', function (e) {
         )
     })
 })
+
+// 成立訂單
+// API要求格式
+// {
+//     "data": {
+//       "user": {
+//         "name": "六角學院",
+//         "tel": "07-5313506",
+//         "email": "hexschool@hexschool.com",
+//         "address": "高雄市六角學院路",
+//         "payment": "Apple Pay"
+//       }
+//     }
+//   }
+const orderInfoForm = document.querySelector('.orderInfo-form');
+const customerName = document.querySelector('#customerName');
+const customerPhone = document.querySelector('#customerPhone');
+const customerEmail = document.querySelector('#customerEmail');
+const customerAddress = document.querySelector('#customerAddress');
+const tradeWay = document.querySelector('#tradeWay');
+const orderInfoBtn = document.querySelector('.orderInfo-btn');
+orderInfoBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (cartsData.carts.length > 0) {
+        console.log('購物車內有資料');
+        if (customerName.value == '' || customerPhone.value == '' || customerEmail.value == '' || customerAddress.value == '') {
+            alert('所有訂單資料欄位皆為必填，請協助填寫 感謝');
+        }
+        else {
+            // console.log('所有資料皆有填寫');
+            axios.post(`https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders
+            `, {
+                "data": {
+                    "user": {
+                        "name": customerName.value,
+                        "tel": customerPhone.value,
+                        "email": customerEmail.value,
+                        "address": customerAddress.value,
+                        "payment": tradeWay.value
+                    }
+                }
+            }).then(function (response) {
+                console.log(response);
+                getCartData();
+                orderInfoForm.reset();
+                alert('訂單成立成功');
+            }).catch(function (error) {
+                console.log(error);
+                console.log('訂單成立失敗')
+            })
+        }
+    }
+    else {
+        alert('購物車目前無資料');
+    }
+})

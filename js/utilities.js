@@ -10,3 +10,4 @@ function toThousands(value) {
         return ''
     }
 }
+
