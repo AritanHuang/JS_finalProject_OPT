@@ -202,45 +202,57 @@ orderInfoBtn.addEventListener('click', function (e) {
     e.preventDefault();
     if (cartsData.carts.length > 0) {
         // console.log('購物車內有資料');
-        checkValue();
-        if (customerName.value == '' || customerPhone.value == '' || customerEmail.value == '' || customerAddress.value == '') {
-            Swal.fire(
-                '訂單成立失敗!',
-                `所有訂單資料欄位皆為必填，請協助填寫 感謝`,
-                'error'
-            )
-        }
-        else {
-            // console.log('所有資料皆有填寫');
-            axios.post(`https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders
-            `, {
-                "data": {
-                    "user": {
-                        "name": customerName.value,
-                        "tel": customerPhone.value,
-                        "email": customerEmail.value,
-                        "address": customerAddress.value,
-                        "payment": tradeWay.value
-                    }
-                }
-            }).then(function (response) {
-                console.log(response);
-                getCartData();
-                orderInfoForm.reset();
+        // checkValue();
+        // validate.js 表單驗證
+        const result = validate(orderInfoForm, constraints);
+        const inputs = document.querySelectorAll("input[type=text],input[type=tel],input[type=email]");
+        console.log(result);
+        inputs.forEach(function (item) {
+            item.nextElementSibling.textContent = '';
+            // console.log(item.nextElementSibling);
+            if (result) {
+                let resultAry = Object.keys(result);
+                resultAry.forEach(function (value) {
+                    document.querySelector(`#${value}`).textContent = result[value];
+                })
                 Swal.fire(
-                    '成功!',
-                    `訂單成立成功`,
-                    'success'
-                )
-            }).catch(function (error) {
-                console.log(error);
-                Swal.fire(
-                    '失敗!',
-                    `訂單成立失敗`,
+                    '訂單成立失敗!',
+                    `資料填寫有誤，請協助確認感謝`,
                     'error'
                 )
-            })
-        }
+            }
+            else {
+                // console.log('所有資料皆有填寫');
+                axios.post(`https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders
+                `, {
+                    "data": {
+                        "user": {
+                            "name": customerName.value,
+                            "tel": customerPhone.value,
+                            "email": customerEmail.value,
+                            "address": customerAddress.value,
+                            "payment": tradeWay.value
+                        }
+                    }
+                }).then(function (response) {
+                    console.log(response);
+                    getCartData();
+                    orderInfoForm.reset();
+                    Swal.fire(
+                        '成功!',
+                        `訂單成立成功`,
+                        'success'
+                    )
+                }).catch(function (error) {
+                    console.log(error);
+                    Swal.fire(
+                        '失敗!',
+                        `訂單成立失敗`,
+                        'error'
+                    )
+                })
+            }
+        })
     }
     else {
         Swal.fire(
@@ -251,20 +263,5 @@ orderInfoBtn.addEventListener('click', function (e) {
     }
 })
 
-// validate.js 表單驗證
-function checkValue() {
-    const result = validate(orderInfoForm, constraints);
-    const inputs = document.querySelectorAll("input[type=text],input[type=tel],input[type=email]");
-    console.log(result);
-    inputs.forEach(function (item) {
-        item.nextElementSibling.textContent = '';
-        // console.log(item.nextElementSibling);
-        if (result) {
-            let resultAry = Object.keys(result);
-            resultAry.forEach(function (value) {
-                document.querySelector(`#${value}`).textContent = result[value];
-            })
-        }
-    })
-}
+
 
