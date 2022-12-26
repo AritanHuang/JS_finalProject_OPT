@@ -201,9 +201,14 @@ const orderInfoBtn = document.querySelector('.orderInfo-btn');
 orderInfoBtn.addEventListener('click', function (e) {
     e.preventDefault();
     if (cartsData.carts.length > 0) {
-        console.log('購物車內有資料');
+        // console.log('購物車內有資料');
+        checkValue();
         if (customerName.value == '' || customerPhone.value == '' || customerEmail.value == '' || customerAddress.value == '') {
-            alert('所有訂單資料欄位皆為必填，請協助填寫 感謝');
+            Swal.fire(
+                '訂單成立失敗!',
+                `所有訂單資料欄位皆為必填，請協助填寫 感謝`,
+                'error'
+            )
         }
         else {
             // console.log('所有資料皆有填寫');
@@ -222,14 +227,44 @@ orderInfoBtn.addEventListener('click', function (e) {
                 console.log(response);
                 getCartData();
                 orderInfoForm.reset();
-                alert('訂單成立成功');
+                Swal.fire(
+                    '成功!',
+                    `訂單成立成功`,
+                    'success'
+                )
             }).catch(function (error) {
                 console.log(error);
-                console.log('訂單成立失敗')
+                Swal.fire(
+                    '失敗!',
+                    `訂單成立失敗`,
+                    'error'
+                )
             })
         }
     }
     else {
-        alert('購物車目前無資料');
+        Swal.fire(
+            '訂單成立失敗!',
+            `購物車目前沒有資料`,
+            'error'
+        )
     }
 })
+
+// validate.js 表單驗證
+function checkValue() {
+    const result = validate(orderInfoForm, constraints);
+    const inputs = document.querySelectorAll("input[type=text],input[type=tel],input[type=email]");
+    console.log(result);
+    inputs.forEach(function (item) {
+        item.nextElementSibling.textContent = '';
+        // console.log(item.nextElementSibling);
+        if (result) {
+            let resultAry = Object.keys(result);
+            resultAry.forEach(function (value) {
+                document.querySelector(`#${value}`).textContent = result[value];
+            })
+        }
+    })
+}
+
