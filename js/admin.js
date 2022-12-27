@@ -78,7 +78,7 @@ function renderOrderData() {
             <a href="#" class="orderStatusBtn" data-id='${value.id}' data-status='${value.paid}'>${orderStatus}</a>
         </td>
         <td>
-            <input type="button" class="delSingleOrder-Btn" value="刪除">
+            <input type="button" data-id='${value.id}' class="delSingleOrder-Btn" value="刪除">
         </td>
     </tr>`
     })
@@ -121,3 +121,21 @@ function changeStatus(dataId, dataStatus) {
             console.log(error);
         })
 }
+//刪除單筆訂單資訊
+orderTable.addEventListener('click', function (e) {
+    let dataId = e.target.getAttribute('data-id');
+    if (e.target.getAttribute('class') == 'delSingleOrder-Btn') {
+        axios.delete(`https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders/${dataId}
+        `, {
+            headers: {
+                'Authorization': token
+            }
+        }).then(function (response) {
+            alert(`${dataId}已刪除`);
+            getOrderData();
+        }).catch(function (error) {
+            alert(`${dataId}刪除失敗`);
+            console.log(error);
+        })
+    }
+})
